@@ -11,6 +11,14 @@ def varo_login():
 	}
     });'''
 
+def hnslogin():
+    # Redirect to https://login.hns.au/auth?return={{scheme}}{{host}}/auth
+    
+    return """
+const { protocol, hostname, port } = window.location;
+const rootUrl = `${protocol}//${hostname}${port ? `:${port}` : ''}/auth`;
+window.location.href = `https://login.hns.au/auth?return=${encodeURIComponent(rootUrl)}`;
+"""
 
 def preview(data):
     title = data['title']

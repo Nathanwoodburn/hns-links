@@ -69,7 +69,7 @@ def index():
             for i in cookies:
                 if i['cookie'] == auth:
                     return render_template('index.html',varo="window.location = '/site';", year=datetime.datetime.now().year)
-        return render_template('index.html',varo=render.varo_login(), year=datetime.datetime.now().year)
+        return render_template('index.html',varo=render.hnslogin(), year=datetime.datetime.now().year)
     # Remove any ports
     host = request.host.split(':')[0]
     # Get content from site
@@ -494,6 +494,38 @@ def auth():
     with open('cookies.json', 'w') as file:
         json.dump(cookies, file)
 
+    resp.set_cookie('auth', auth_cookie)
+    return resp
+
+@app.route('/auth', methods=['GET'])
+def auth_get():
+    global cookies
+    
+    if 'username' not in request.args:
+        return redirect('/?error=Failed to login&reason=No username')
+    if 'token' not in request.args:
+        return redirect('/?error=Failed to login&reason=No token')
+    
+    username = request.args['username']
+    token = request.args['token']
+    
+    # Check if user is valid
+    r = requests.get(f'https://login.hns.au/auth/user?token={token}')
+    r = r.json()
+
+    if 'error' in r:
+        return redirect('/?error=Failed to login&reason=' + r['error'])
+
+    if r['username'] != username:
+        return redirect('/?error=Failed to login&reason=Username mismatch')
+    
+    auth_cookie = secrets.token_hex(12 // 2)
+    cookies.append({'name': username, 'cookie': auth_cookie})
+
+    with open('cookies.json', 'w') as file:
+        json.dump(cookies, file)
+
+    resp = make_response(redirect('/site'))
     resp.set_cookie('auth', auth_cookie)
     return resp
 
