@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Nostr - HNS Links</title>
+    <title>Testimonials - HNS Links</title>
     <meta name="twitter:title" content="HNS Links">
     <meta name="twitter:image" content="https://links.hns.au/assets/img/dashboard.png">
     <meta name="twitter:card" content="summary">
@@ -30,50 +30,29 @@
     <nav class="navbar navbar-expand-md sticky-top py-3 navbar-dark" id="mainNav">
         <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><img src="/assets/img/favicon.png" width="45px"><span>&nbsp;HNS Links</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav mx-auto"></ul><a class="btn btn-primary shadow" role="button" href="/preview" style="margin-right: 10px;">Preview</a><a class="btn btn-primary shadow" role="button" href="/logout">Logout</a>
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#contact">Contact</a></li>
+                </ul>
             </div>
         </div>
     </nav>
-    <header class="bg-dark">
-        <div class="container pt-4 pt-xl-5">
-            <div class="row pt-5">
-                <div class="col-md-8 col-xl-6 text-center text-md-start mx-auto">
-                    <div class="text-center">
-                        <p class="fw-bold text-success mb-2">{{domain}}/</p>
-                        <h1 class="fw-bold">Manage your site</h1>
+    <section class="py-5">
+        <div class="container py-5">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <p class="fw-bold text-success mb-2">Terms</p>
+                </div>
+            </div>
+            <div class="row d-sm-flex">
+                <div class="col mb-4">
+                    <div>
+                        <p>Terms of Service for HNS Links Last Updated: 11/10/24<br><br>Welcome to HNS Links! Please carefully read the following terms before using our hosting services.<br><br>By using our website hosting services, you agree to comply with and be bound by the following terms and conditions. If you do not agree to these terms, please do not use our services.<br><br>1. Acceptance of Terms:<br>By accessing or using our website hosting services, you agree to these Terms of Service and all applicable laws and regulations.<br><br>2. Hosting Services:<br>HNS Links provides hosting services for websites, and related content.<br><br>3. Content and Usage:<br>You are solely responsible for the content hosted on your website. You agree not to host any content that violates applicable laws or infringes on the rights of others. This includes anything usually classified as NSFW. HNS Links reserves the right to suspend or terminate services for any user found in violation of this provision.<br><br>4. Data Security:<br>We implement reasonable measures to protect the security of your data, but we cannot guarantee its absolute security. You should backup any critical data using your own backup solution.<br><br>5. Uptime and Downtime:<br>HNS Links strives to provide high uptime for its hosting services. However, downtime may occur for maintenance or other reasons. We will make reasonable efforts to notify you in advance of scheduled maintenance.<br><br>6. Support:<br>We offer customer support for technical issues related to our hosting services. Support availability and response times may vary. We can not guarantee support for issues unrelated to our hosting services.<br><br>7. Termination:<br>HNS Links reserves the right to terminate or suspend your site at any time for violation of these terms or for any other reason. You may also terminate your site by contacting us.<br><br>8. Changes to Terms:<br>HNS Links reserves the right to modify these Terms of Service at any time. Any changes will be effective immediately upon posting on our website. It is your responsibility to review these terms regularly.<br><br><br>By using our hosting services, you agree to these terms. If you have any questions or concerns, please contact us.<br>Thank you for choosing HNS Links!</p>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
-    <section>
-        <div style="padding: 1em;padding-bottom: 25px;max-width: 800px;margin: auto;">
-            <form method="post" enctype="multipart/form-data">
-                <h1>Nostr</h1>
-                <div style="margin-bottom: 25px;">
-                    <h4>Nostr Links</h4>{% for link in nostr %}
-<div class='nostr'>
-<input class="form-control" type="text" style="display: inline-block;width: auto;" value="{{link.name}}" readonly/>
-<input class="form-control" type="text" style="display: inline-block;width: auto;" value="{{link.pub}}" readonly/>
-<a class="btn btn-primary" role="button" href="/nostr/delete/{{link.id}}"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em" fill="currentColor">
-    <path d="M0 0h24v24H0z" fill="none"></path>
-    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
-</svg></a>
-</div>
-{% endfor %}
-
-<div class='nostr'>
-    <span>Link a new nostr profile</span><br>
-<input class="form-control" type="text" style="display: inline-block;width: auto;" name="new-name" placeholder="User Name" />
-<input class="form-control" type="text" style="display: inline-block;width: auto;" name="new-pub" placeholder="npub..." />
-    <br><br>
-    <input class="btn btn-primary" type="submit" value="Link" style="margin-right: 20px;" />
-</div>
-                </div>
-            </form>
-        </div>
     </section>
-    <section></section>
     <footer class="bg-dark">
         <div class="container py-4 py-lg-5">
             <div class="row justify-content-center">
@@ -87,7 +66,7 @@
                 <div class="col-sm-4 col-md-3 text-center text-lg-start d-flex flex-column">
                     <h3 class="fs-6 fw-bold">About</h3>
                     <ul class="list-unstyled">
-                        <li><a href="/terms">Terms</a></li>
+                        <li></li>
                         <li><a href="https://hns.au" target="_blank">HNSAU</a></li>
                         <li><a href="https://nathan.woodburn.au" target="_blank">Nathan.Woodburn/</a></li>
                     </ul>
@@ -99,7 +78,7 @@
             </div>
             <hr>
             <div class="text-muted d-flex justify-content-between align-items-center pt-3">
-                <p class="mb-0">Copyright © {{year}} Nathan.Woodburn/</p>
+                <p class="mb-0">Copyright © 2024 HNS Links</p>
             </div>
         </div>
     </footer>

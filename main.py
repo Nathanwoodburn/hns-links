@@ -80,6 +80,10 @@ def index():
         return render.site(data, host)
     return redirect(f'https://{DOMAINS[0]}')
 
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
 @app.route('/site')
 def site():
     # Get auth domain
