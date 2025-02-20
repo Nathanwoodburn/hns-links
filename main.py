@@ -516,10 +516,12 @@ def auth_get():
     # Check if user is valid
     r = requests.get(f'https://login.hns.au/auth/user?token={token}')
     if r.status_code != 200:
+        print(r.text,flush=True)
         return redirect('/?error=Failed to login&reason=Failed to connect to HNS Login')
     try:
         r = r.json()
     except:
+        print(r.text,flush=True)
         return redirect('/?error=Failed to login&reason=Failed to connect to HNS Login')
 
     if 'error' in r:
