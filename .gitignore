@@ -10,3 +10,4 @@ certs/
 cookies.json
 
 sites/
+*.hurl

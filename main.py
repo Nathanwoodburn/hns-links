@@ -27,6 +27,11 @@ try:
 except:
     IP = "Error"
 
+# Get HSD API
+HSD_API = os.getenv('HSD_API', '')
+HSD_IP = os.getenv('HSD_IP', '127.0.0.1')
+HSD_PORT = os.getenv('HSD_PORT', 12037)
+
 # Load cookies
 cookies = []
 
@@ -586,6 +591,87 @@ def tokens(path):
     if colour.lower() == 'w':
         return send_from_directory('templates/assets/img/tokens', f'{token}W.png')
     return send_from_directory('templates/assets/img/tokens', f'{token}.png')
+
+# region API routes
+@app.route('/api/v1/site', methods=['POST'])
+def api_site_post():
+    if not request.json:
+        return jsonify({'error': 'No JSON data provided',"success":False}), 400
+    if 'domain' not in request.json:
+        return jsonify({'error': 'No domain provided',"success":False}), 400
+    if 'signature' not in request.json:
+        return jsonify({'error': 'No signature provided',"success":False}), 400
+    if 'data' not in request.json:
+        return jsonify({'error': 'No data provided',"success":False}), 400
+    
+    domain = request.json['domain']
+    signature = request.json['signature']
+    data = request.json['data']
+    # Verify signature
+    r = requests.post(f'http://x:{HSD_API}@{HSD_IP}:{HSD_PORT}', json={
+        'method': 'verifymessagewithname',
+        'params': [domain, signature, "hns-links"]
+    })
+    if r.status_code != 200:
+        return jsonify({'error': 'Failed to connect to HSD',"success":False}), 500
+    r = r.json()
+    if 'result' not in r:
+        return jsonify({'error': 'Failed to verify signature',"success":False}), 400
+    if r['result'] != True:
+        return jsonify({'error': 'Failed to verify signature',"success":False}), 400
+    
+    keys = ['title', 'link_0', 'link_1', 'link_2', 'link_3', 'link_0_url', 'link_1_url', 'link_2_url', 'link_3_url', 'fg_0', 'bg_0', 'bg_1', 'btn_bg', 'btn_fg', 'image']
+    for key in keys:
+        if key not in data:
+            data[key] = ''
+
+    if os.path.exists(f'sites/{domain}.json'):
+        with open(f'sites/{domain}.json') as file:
+            old_data = json.load(file)
+            if 'tlsa' in old_data:
+                data['tlsa'] = old_data['tlsa']
+            for key in old_data:
+                if key not in data:
+                    data[key] = old_data[key]
+                if data[key] == '':
+                    data[key] = old_data[key]
+
+    if 'socials' not in data:
+        data['socials'] = []
+    if 'address' not in data:
+        data['address'] = []
+
+    with open(f'sites/{domain}.json', 'w') as file:
+        json.dump(data, file)
+
+    if 'tlsa' in data:
+        return jsonify({'error': None, "success":True,"TLSA": data['tlsa'],"IP":IP}), 200
+    def generate_ssl_and_write_nginx():
+        tlsa = nginx.generate_ssl(domain)
+        data['tlsa'] = tlsa
+        with open(f'sites/{domain}.json', 'w') as file:
+            json.dump(data, file)
+        nginx.write_nginx_conf(domain)
+
+    threading.Thread(target=generate_ssl_and_write_nginx).start()
+
+    return jsonify({'error': None, "success":True,"TLSA":None,"IP":IP}), 200
+
+@app.route('/api/v1/site', methods=['GET'])
+def api_site_get():
+    if 'domain' not in request.args:
+        return jsonify({'error': 'No domain provided',"success":False}), 400
+    domain = request.args['domain']
+    if os.path.exists(f'sites/{domain}.json'):
+        with open(f'sites/{domain}.json') as file:
+            data = json.load(file)
+            return jsonify({'error': None, "success":True,"data":data,"IP":IP}), 200
+    return jsonify({'error': 'Site not found',"success":False}), 404
+
+
+# endregion
+
+
 
 # 404 catch all
 @app.errorhandler(404)
