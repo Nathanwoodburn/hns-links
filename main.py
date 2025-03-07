@@ -512,29 +512,45 @@ def auth_get():
     
     if 'username' not in request.args:
         return redirect('/?error=Failed to login&reason=No username')
-    if 'token' not in request.args:
+    username = request.args['username']
+
+    if 'token' not in request.args and 'signature' not in request.args:
         return redirect('/?error=Failed to login&reason=No token')
     
-    username = request.args['username']
-    token = request.args['token']
+    if 'token' in request.args:
+        token = request.args['token']
     
-    # Check if user is valid
-    r = requests.get(f'https://login.hns.au/auth/user?token={token}')
-    if r.status_code != 200:
-        print(r.text,flush=True)
-        return redirect('/?error=Failed to login&reason=Failed to connect to HNS Login')
-    try:
+        # Check if user is valid
+        r = requests.get(f'https://login.hns.au/auth/user?token={token}')
+        if r.status_code != 200:
+            print(r.text,flush=True)
+            return redirect('/?error=Failed to login&reason=Failed to connect to HNS Login')
+        try:
+            r = r.json()
+        except:
+            print(r.text,flush=True)
+            return redirect('/?error=Failed to login&reason=Failed to connect to HNS Login')
+
+        if 'error' in r:
+            return redirect('/?error=Failed to login&reason=' + r['error'])
+
+        if r['username'] != username:
+            return redirect('/?error=Failed to login&reason=Username mismatch')
+    
+    else: # Signature based login
+        signature = request.args['signature']
+        r = requests.post(f'http://x:{HSD_API}@{HSD_IP}:{HSD_PORT}', json={
+            'method': 'verifymessagewithname',
+            'params': [username, signature, "hns-links"]
+        })
+        if r.status_code != 200:
+            return jsonify({'error': 'Failed to connect to HSD',"success":False}), 500
         r = r.json()
-    except:
-        print(r.text,flush=True)
-        return redirect('/?error=Failed to login&reason=Failed to connect to HNS Login')
+        if 'result' not in r:
+            return jsonify({'error': 'Failed to verify signature',"success":False}), 400
+        if r['result'] != True:
+            return jsonify({'error': 'Failed to verify signature',"success":False}), 400
 
-    if 'error' in r:
-        return redirect('/?error=Failed to login&reason=' + r['error'])
-
-    if r['username'] != username:
-        return redirect('/?error=Failed to login&reason=Username mismatch')
-    
     auth_cookie = secrets.token_hex(12 // 2)
     cookies.append({'name': username, 'cookie': auth_cookie})
 
