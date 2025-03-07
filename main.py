@@ -637,9 +637,14 @@ def api_site_post():
         return jsonify({'error': 'Failed to verify signature',"success":False}), 400
     
     keys = ['title', 'link_0', 'link_1', 'link_2', 'link_3', 'link_0_url', 'link_1_url', 'link_2_url', 'link_3_url', 'fg_0', 'bg_0', 'bg_1', 'btn_bg', 'btn_fg', 'image']
+    preset = {"bg_0": "#001665", "bg_1": "#000000", "fg_0": "#ffffff", "btn_bg": "#2c54cf", "btn_fg": "#ffffff"}
     for key in keys:
         if key not in data:
-            data[key] = ''
+            if key in preset:
+                data[key] = preset[key]
+            else:
+                data[key] = ''
+
 
     if os.path.exists(f'sites/{domain}.json'):
         with open(f'sites/{domain}.json') as file:
