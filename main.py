@@ -313,6 +313,33 @@ def publish():
     response.set_cookie('auth', '', expires=0)
     return response
 
+@app.route('/renew')
+def renew():
+    if 'auth' not in request.cookies:
+        return redirect('/')
+    auth = request.cookies['auth']
+
+    for i in cookies:
+        if i['cookie'] == auth:
+            # Load site content
+            if os.path.isfile(f'sites/{i["name"]}.json'):
+                with open(f'sites/{i["name"]}.json') as file:
+                    data = json.load(file)
+                    
+                    def regenerate_ssl_and_write_nginx():
+                        tlsa = nginx.generate_ssl(i['name'])
+                        data['tlsa'] = tlsa
+                        with open(f'sites/{i["name"]}.json', 'w') as file:
+                            json.dump(data, file)
+                        nginx.write_nginx_conf(i['name'])
+
+                    threading.Thread(target=regenerate_ssl_and_write_nginx).start()
+                    return redirect('/publishing')
+                    
+    response = make_response(redirect('/'))
+    response.set_cookie('auth', '', expires=0)
+    return response
+
 @app.route('/nostr')
 def nostr():
     if 'auth' not in request.cookies:
